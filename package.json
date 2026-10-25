@@ -25,7 +25,7 @@
   "keywords": ["youtube", "playlist", "video-info", "downloader", "search", "ytmp3", "ytmp4", "mp3", "mp4", "scraper", "cli", "esm", "commonjs", "danuzz"],
   "author": "@DanuZz",
   "license": "MIT",
-  "homepage": "https://www.movanest.xyz",
+  "homepage": "https://www.dnuz.top",
   "repository": { "type": "git", "url": "https://github.com/dnuzi/ytdl-lite.git" },
   "bugs": { "url": "https://github.com/dnuzi/ytdl-lite/issues" },
   "dependencies": {}
