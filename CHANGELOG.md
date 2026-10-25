@@ -1,40 +1,21 @@
 # Changelog
 
-All notable changes to `ytdl-lite` will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
----
-
-## [1.0.0] — Initial Release
+## 1.0.1
+### Changed
+- **New engines.** Replaced the movanest (`savetube`) and `ytdl-new` scrapers with the savenow downloader and a 4-provider search (Innertube → Piped → Invidious → HTML) with caching.
+- **Zero dependencies.** `axios`, `qs` and `sanitize-filename` removed; uses Node 18+ built-in `fetch`.
+- Unicode-aware `slugify` (non-Latin titles no longer become `download`).
 
 ### Added
-- `ytmp3(url, quality?, opts?)` — Download YouTube audio as MP3
-- `ytmp4(url, quality?, opts?)` — Download YouTube video as MP4 with quality selection
-- `getInfo(url)` — Fetch all available formats and video metadata
-- Quality options: `'best'`, `'2160'`, `'1440'`, `'1080'`, `'720'`, `'480'`, `'360'`, `'240'`, `'144'`, `'mp3'`
-- Suggested file path output (e.g. `./song-title.mp3` / `./song-title.mp4`)
-- Auto fallback between engines (savetube → ytdlnew)
-- CLI support via `ytdl` command:
-  - `ytdl mp3 <url>`
-  - `ytdl mp4 <url> [quality]`
-  - `ytdl info <url>`
-- `slugify()` and `buildPath()` utility helpers exported
-- `sanitize-filename` for safe file naming
-- Full JSDoc comments on all public functions
+- **Full video details** from `getInfo`: description, views, likes, publish/upload date, category, keywords, chapters, channel id/url, live/private/unlisted flags, country list, all thumbnails. Falls back to basic info (`partial: true`) if YouTube blocks the detailed lookup.
+- **`getPlaylist(url|id, { limit, all })`** — title, description, owner, video count, views, last updated, total duration and every video (with pagination). CLI: `ytdl playlist <url> --all`.
+- Dual package: CommonJS (`require`) and ESM (`import`) via `exports` map, plus TypeScript types.
+- `search(query, opts)`; `ytmp3`/`ytmp4`/`getInfo` accept a **URL or a search query**.
+- `save: true` option downloads the file to disk, with `onProgress` callbacks.
+- `ytmp4(url, 'worst')`, `'720p'` style qualities, automatic fallback chain for `'best'`.
+- `getLink`, `saveFile`, `resolve`, `extractVideoId`, `isYouTubeUrl`, `formatDuration`, `formatBytes`, `thumbnails`.
+- `YTDLError` with stable `.code` values.
+- CLI: `ytdl search`, `--save`, `--dir`, `--limit`, `--quality all`, `--version`.
 
-### Engines
-- **Primary (ytmp4):** `movanest.xyz/v2/ytdown` — supports quality selection
-- **Primary (ytmp3):** `ytdl-new.vercel.app` — fast mp3 conversion
-- **Fallback:** Automatic cross-engine fallback on failure
-
----
-
-## Unreleased
-
-> Changes that are staged but not yet published will appear here.
-
----
-
-_For older versions, see the [GitHub Releases](../../releases) page._
+### Removed
+- `savetube` and `ytdlnewDownload` low-level exports.

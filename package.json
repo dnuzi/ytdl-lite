@@ -1,28 +1,32 @@
 {
   "name": "ytdl-lite",
-  "version": "1.0.0",
-  "description": "YouTube downloader — MP3 & MP4 with quality selection, JSON info, and file path output",
-  "main": "index.js",
-  "bin": {
-    "ytdl": "./bin/cli.js"
+  "version": "1.0.1",
+  "description": "Zero-dependency YouTube downloader & search — MP3/MP4 links, quality selection, file saving, CLI. Works with CommonJS and ESM.",
+  "main": "./index.js",
+  "module": "./index.mjs",
+  "types": "./types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./index.mjs",
+      "require": "./index.js",
+      "default": "./index.js"
+    },
+    "./package.json": "./package.json"
   },
+  "bin": { "ytdl": "./bin/cli.js" },
+  "files": ["index.js", "index.mjs", "lib", "bin", "types", "README.md", "CHANGELOG.md", "LICENSE"],
+  "engines": { "node": ">=18" },
+  "sideEffects": false,
   "scripts": {
-    "test": "node test.js"
+    "test": "node --test test/",
+    "test:live": "node test.js"
   },
-  "keywords": ["youtube", "downloader", "video", "ytmp3", "ytmp4", "yt-dlp", "scraper", "danuzz"],
+  "keywords": ["youtube", "playlist", "video-info", "downloader", "search", "ytmp3", "ytmp4", "mp3", "mp4", "scraper", "cli", "esm", "commonjs", "danuzz"],
   "author": "@DanuZz",
   "license": "MIT",
   "homepage": "https://www.movanest.xyz",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dnuzi/ytdl-lite.git"
-  },
-  "bugs": {
-    "url": "https://github.com/dnuzi/ytdl-lite/issues"
-  },
-  "dependencies": {
-    "axios": "^1.7.2",
-    "qs": "^6.12.1",
-    "sanitize-filename": "^1.6.3"
-  }
+  "repository": { "type": "git", "url": "https://github.com/dnuzi/ytdl-lite.git" },
+  "bugs": { "url": "https://github.com/dnuzi/ytdl-lite/issues" },
+  "dependencies": {}
 }

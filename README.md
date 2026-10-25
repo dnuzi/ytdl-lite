@@ -1,188 +1,85 @@
 # ✨ ytdl-lite
 
-> 🚀 **Fast & reliable YouTube downloader** — MP3 & MP4 with quality selection, metadata, and smart file paths.
-> ⚡ Powered by dual scrapers with automatic fallback for maximum uptime.
-
----
-
-## 📦 Install
+Zero-dependency YouTube downloader & search for Node.js 18+. **CommonJS + ESM + TypeScript.**
 
 ```bash
 npm install ytdl-lite
 ```
 
----
-
-## ⚡ Features
-
-* 🎵 Download **MP3 (best / 320 / 256 / 128 kbps)**
-* 🎬 Download **MP4 (1080p / 720p / 480p / 360p)**
-* 🔄 **Auto fallback system** (2 scrapers)
-* 📊 Full **video metadata (JSON)**
-* 📁 Clean **auto-generated file paths**
-* 🧠 Smart **format detection**
-* 💻 CLI support
-
----
-
-## 🚀 Quick Start
+## Quick start
 
 ```js
-const ytdl = require('ytdl-lite');
+// CommonJS
+const { ytmp3, ytmp4, search, getInfo } = require('ytdl-lite');
+// ESM
+import { ytmp3, ytmp4, search, getInfo } from 'ytdl-lite';
 
-const URL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+const URL = 'https://youtu.be/dQw4w9WgXcQ';
 
-// 🎵 MP3
-const mp3 = await ytdl.ytmp3(URL);
-console.log(mp3.url);
-console.log(mp3.path);
-
-// 🎬 MP4 (best)
-const mp4 = await ytdl.ytmp4(URL);
-console.log(mp4.url);
-console.log(mp4.path);
-
-// 🎬 MP4 (specific quality)
-const hd = await ytdl.ytmp4(URL, '1080');
-console.log(hd.quality, hd.url);
-
-// 📦 All formats
-const all = await ytdl.ytmp4(URL, null);
-all.medias.forEach(m => console.log(m.type, m.label));
-
-// 📊 Info only
-const info = await ytdl.getInfo(URL);
-console.log(info.title, info.duration);
+await ytmp3(URL);                                  // { url, title, path, ... }
+await ytmp3('never gonna give you up');            // search text works too
+await ytmp3(URL, 'best', { save: true, dir: './music' }); // download to disk
+await ytmp4(URL, '720');                           // 360 | 480 | 720 | 1080 | best | worst
+await ytmp4(URL, null);                            // all formats -> .medias[]
+await search('believer', { limit: 5 });
+await getInfo(URL);                                // views, likes, description, chapters...
+await getPlaylist('https://youtube.com/playlist?list=PL...', { all: true });
 ```
 
----
-
-## 📚 API Reference
-
-### 🎵 `ytmp3(url, quality = 'best', opts = {})`
-
-Download audio in MP3 format.
-
-| Param      | Type     | Description                      |
-| ---------- | -------- | -------------------------------- |
-| `url`      | `string` | YouTube URL                      |
-| `quality`  | `string` | `best`, `320`, `256`, `128`      |
-| `opts.dir` | `string` | Output directory (default: `./`) |
-
-**Response**
-
-```json
-{
-  "status": true,
-  "title": "Never Gonna Give You Up",
-  "url": "...",
-  "quality": "best",
-  "type": "audio",
-  "path": "./never-gonna-give-you-up.mp3"
-}
+### getInfo output (example)
+```js
+{ id, url, title, description, author, channelId, channelUrl, duration: '3:33', seconds: 213,
+  views: 1500000000, likes: 18000000 /* best effort, may be null */, publishDate: '2009-10-25',
+  uploadDate, category: 'Music', keywords: [...], chapters: [{ time, seconds, title }],
+  isLive, isPrivate, isUnlisted, isFamilySafe, availableCountries, playlistId,
+  thumbnail, thumbnails: { default, medium, high, standard, maxres }, thumbnailList }
 ```
 
----
-
-### 🎬 `ytmp4(url, quality = 'best', opts = {})`
-
-Download video in MP4 format.
-
-| Param      | Type             | Description                                    |
-| ---------- | ---------------- | ---------------------------------------------- |
-| `url`      | `string`         | YouTube URL                                    |
-| `quality`  | `string \| null` | `best`, `1080`, `720`, `480`, `360`, or `null` |
-| `opts.dir` | `string`         | Output directory                               |
-
----
-
-#### ▶ Single format
-
-```json
-{
-  "status": true,
-  "title": "...",
-  "quality": "1080",
-  "type": "video",
-  "url": "...",
-  "path": "./video.mp4"
-}
+### getPlaylist output
+```js
+{ id, url, title, description, author, channelId, channelUrl, videoCount, views, lastUpdated,
+  totalSeconds, thumbnail, hasMore, items: [{ index, id, url, title, author, duration, seconds, thumbnail, isPlayable }] }
 ```
 
-#### 📦 All formats (`quality = null`)
+## API
 
-```json
-{
-  "status": true,
-  "title": "...",
-  "medias": [
-    { "type": "video", "quality": "1080", "label": "1080p" },
-    { "type": "audio", "quality": "128", "label": "MP3 • 128kbps" }
-  ]
-}
+| Function | Description |
+| --- | --- |
+| `ytmp3(input, quality?, opts?)` | MP3 link (`input` = URL or search query) |
+| `ytmp4(input, quality = 'best', opts?)` | MP4 link; `null` returns every format |
+| `search(query, { limit, providers, cache })` | Search videos |
+| `getInfo(input, { likes })` | **Full details**: description, views, likes, dates, category, keywords, chapters, channel, flags, thumbnails |
+| `getPlaylist(urlOrId, { limit, all })` | Playlist details + videos (paginated, default 100, `all:true` for everything) |
+| `getLink(url, format, opts?)` | Low-level: direct link for `mp3`/`360`/`480`/`720`/`1080` |
+| `saveFile(url, path, { onProgress })` | Stream a URL to disk |
+| `extractVideoId`, `isYouTubeUrl`, `slugify`, `buildPath`, `formatDuration`, `formatBytes`, `thumbnails` | Utilities |
+
+**Options** (`ytmp3` / `ytmp4`): `dir`, `save`, `onProgress`, `apiKey` (or env `YTDL_API_KEY`), `timeout`, `maxWaitMs`, `retries`.
+
+**Search** tries Innertube → Piped → Invidious → HTML and caches results for 30 min.
+
+**Errors** are `YTDLError` with `.code`: `INVALID_INPUT`, `INVALID_URL`, `INVALID_QUALITY`, `SEARCH_FAILED`, `TIMEOUT`, `HTTP_ERROR`, `NETWORK`, `BAD_RESPONSE`, `NO_FORMATS`.
+
+```js
+try { await ytmp4(URL, '720'); }
+catch (e) { if (e.code === 'TIMEOUT') /* retry */; }
 ```
 
----
-
-### 📊 `getInfo(url)`
-
-Get full metadata + all available formats.
-
----
-
-## 🖥️ CLI Usage
+## CLI
 
 ```bash
-npm install -g ytdl-lite
+npm i -g ytdl-lite
+ytdl mp3 "never gonna give you up" --save --dir ./music
+ytdl mp4 https://youtu.be/dQw4w9WgXcQ -q 720
+ytdl mp4 https://youtu.be/dQw4w9WgXcQ -q all
+ytdl search believer -n 5
+ytdl info https://youtu.be/dQw4w9WgXcQ
+ytdl playlist "https://youtube.com/playlist?list=PL..." --all
 ```
 
-```bash
-# MP3
-ytdl mp3 https://youtu.be/VIDEO_ID
+## Notes
+- Requires Node.js ≥ 18 (built-in `fetch`).
+- `ytmp3`'s `quality` argument is kept for compatibility; the service returns a single best-quality MP3.
+- Third-party services can change at any time; use responsibly and respect copyright/YouTube ToS.
 
-# MP4
-ytdl mp4 https://youtu.be/VIDEO_ID 1080
-
-# Info
-ytdl info https://youtu.be/VIDEO_ID
-```
-
----
-
-## 📁 Project Structure
-
-```
-ytdl-lite/
-├── index.js
-├── lib/
-│   ├── ytmp3.js
-│   ├── ytmp4.js
-│   ├── info.js
-│   ├── savetube.js
-│   ├── ytdlnew.js
-│   └── utils.js
-├── bin/cli.js
-├── test.js
-└── package.json
-```
-
----
-
-## 🛡️ Reliability
-
-> This package uses **two independent scraping engines**.
-> If one fails, the other automatically takes over — ensuring high success rates.
-
----
-
-## 📜 License
-
-MIT © **DanuZz**
-
----
-
-## 💡 Pro Tip
-
-Use `quality = null` to build your own **custom downloader UI** with all formats.
-
----
+MIT © DanuZz
